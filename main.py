@@ -10,9 +10,14 @@ window = sg.Window("Expense tracker (beta)", layout, margins=(100, 100))
 
 while True:
     event, values = window.read()
-    if event == "Exit" or event == sg.WIN_CLOSED:
-        break
-    if event == "Settings":
+    if event == "Add expense":
+        pass
+    elif event == "Check balance":
+        pass
+    elif event == "Settings":
         settings_runner()
+    elif event == "Exit" or event == sg.WIN_CLOSED:
+        break
+
 
 window.close()
