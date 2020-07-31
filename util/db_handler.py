@@ -10,4 +10,12 @@ def add_record():
     conn.close()
 
 
-add_record()
+def view_all():
+    conn = sqlite3.connect(r"C:\sqlite\db\default.db")
+    cur = conn.cursor()
+    cur.execute("select * from data")
+    data = cur.fetchall()
+    names = list(map(lambda x: x[0], cur.description))
+    conn.commit()
+    conn.close()
+    return data, names
