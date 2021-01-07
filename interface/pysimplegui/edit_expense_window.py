@@ -1,11 +1,12 @@
 import PySimpleGUI as sg
+from application.commands import *
 
 
-def edit_expense():
+def edit_expense_window():
     col = [[sg.Text("Name", size=(10, 1)), sg.In(key='-NAME-')],
            [sg.Text("Date", size=(10, 1)), sg.In(key='-DATE-')],
            [sg.Text("Category", size=(10, 1)),
-            sg.Combo(['restaurant', 'fuel', 'food'], enable_events=True, key='-combo-cat-')],
+            sg.Combo(['restaurant', 'fuel', 'food'], enable_events=True, key='-combo-cat-edit-')],
            [sg.Text("Value", size=(10, 1)), sg.In(key='-VAL-')],
            [sg.Button("Save")]
            ]
