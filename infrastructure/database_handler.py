@@ -1,37 +1,56 @@
 from sqlalchemy import create_engine, MetaData, Table, String, Column, Integer, Float, ForeignKey
 
 
-def insert(table):
-    if table == 'bills':
-        return bills.insert().values(
-            id=1,
-            product='vacuum cleaner',
-            vendor_id=1001,
-            value=100.50
-        )
-    elif table == 'vendors':
-        return vendors.insert().values(
-            vendor_id=1002,
-            vendor_name='Lidl'
-        )
-    else:
-        print('Incorrect input')
+class Actions:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def update_view():
+        engine = create_engine('sqlite:////sqlite/db/expenses.db')
+        conn = engine.connect()
+        metadata = MetaData(engine)
+        items = Table('items', metadata, autoload=True)
+        ins = items.select()
+        r = conn.execute(ins)
+        return r.fetchall()
+
+    @staticmethod
+    def get_column_names():
+        engine = create_engine('sqlite:////sqlite/db/expenses.db')
+        conn = engine.connect()
+        metadata = MetaData(engine)
+        items = Table('items', metadata, autoload=True)
+        ins = items.select()
+        r = conn.execute(ins)
+        return r.keys()
 
 
 def add_record(data):
-    print(data)
-    print(data['vendor_id'])
+    # print(data)
     engine = create_engine('sqlite:////sqlite/db/expenses.db')
     metadata = MetaData(engine)
-    temp = Table('test2', metadata, autoload=True)
-    ins = temp.insert().values(
-        id=data['id'],
-        product=data['product'],
-        vendor_id=data['vendor_id'],
+    items = Table('items', metadata, autoload=True)
+    ins = items.insert().values(
+        uuid=data['uuid'],
+        description=data['description'],
+        date=data['date'],
+        category=data['category'],
+        vendor_id=data['vendor'],
         value=data['value']
     )
     conn = engine.connect()
     conn.execute(ins)
+
+
+def get_vendors():
+    engine = create_engine('sqlite:////sqlite/db/expenses.db')
+    metadata = MetaData(engine)
+    vends = Table('vendors', metadata, autoload=True)
+    s = vends.select()
+    conn = engine.connect()
+    r = conn.execute(s)
+    return r.fetchall()
 
 
 def main():
@@ -68,4 +87,4 @@ def main():
     print(r.fetchall())
 
 
-main()
+# main()

@@ -1,12 +1,12 @@
 import PySimpleGUI as sg
 from util.settings import settings_runner
 from util.db_handler import view_all
-from application.commands import run
+from application.commands import *
 
 
 def main_window():
-    data = view_all()[0]
-    header_list = view_all()[1]
+    data = DatabaseActions.update_view()
+    header_list = DatabaseActions.get_column_names()
     menu_def = [['&Menu', ['&Settings     Ctrl-S', 'E&xit']], ['Help', ['About']]]
     table = [[sg.Table(values=data,
                        headings=header_list,
@@ -47,11 +47,13 @@ def main_window():
 
 
 def add_expense_window():
-    col = [[sg.Text("Name", size=(10, 1)), sg.In(key='-NAME-')],
-           [sg.Text("Date", size=(10, 1)), sg.In(key='-DATE-')],
-           [sg.Text("Category", size=(10, 1)),
+    col = [[sg.Text("Description", size=(15, 1)), sg.In(key='-DESCR-')],
+           [sg.Text("Date dd/mm/yyyy", size=(15, 1)), sg.In(key='-DATE-')],
+           [sg.Text("Category", size=(15, 1)),
             sg.Combo(['restaurant', 'fuel', 'food'], key='-COMBO-CAT-ADD-')],
-           [sg.Text("Value", size=(10, 1)), sg.In(key='-VALUE-')],
+           [sg.Text("Vendor", size=(15, 1)),
+            sg.Combo(get_vendor_names(), key='-COMBO-VEN-ADD-')],
+           [sg.Text("Value", size=(15, 1)), sg.In(key='-VALUE-')],
            [sg.Button("Add")]
            ]
 
@@ -63,8 +65,23 @@ def add_expense_window():
         if event == sg.WIN_CLOSED:
             break
         elif event == 'Add':
-            run(event, values)
-            sg.Popup("Expense added")
+            try:
+                content = Validator(event, values)
+                obj = content.create_expense_object()
+                Validator.validate_object(obj)
+                temp = FormatSetter(obj)
+                temp2 = temp.format_setter()
+                AddExpense.load_expense(temp2)
+                sg.Popup("Expense added")
+            except DescriptionTooLong:
+                sg.Popup("Incorrect format in field: description", title="Incorrect data format")
+            except IncorrectDateFormat:
+                sg.Popup("Incorrect year format. Year should have at least 4 digits and be higher that 1990",
+                         title="Incorrect data format")
+            except IncorrectCategoryFormat:
+                sg.Popup("Category should consist of up to 50 letters")
+            except ValueError:
+                sg.Popup("Value field should consist of digits only", title="Incorrect data format")
 
     window.close()
 
