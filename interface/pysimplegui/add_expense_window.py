@@ -1,5 +1,9 @@
 import PySimpleGUI as sg
-from application.commands import *
+from application.database_agent import DatabaseActions as da
+from application.validator import Validator
+from application.format_setter import FormatSetter
+from application.commands import AddExpense
+from application.exceptions import *
 
 
 def add_expense_window():
@@ -8,7 +12,7 @@ def add_expense_window():
            [sg.Text("Category", size=(15, 1)),
             sg.Combo(['restaurant', 'fuel', 'food'], key='-COMBO-CAT-ADD-')],
            [sg.Text("Vendor", size=(15, 1)),
-            sg.Combo(get_vendor_names(), key='-COMBO-VEN-ADD-')],
+            sg.Combo(da.get_vendor_names(), key='-COMBO-VEN-ADD-')],
            [sg.Text("Value", size=(15, 1)), sg.In(key='-VALUE-')],
            [sg.Button("Add")]
            ]
@@ -22,8 +26,8 @@ def add_expense_window():
             break
         elif event == 'Add':
             try:
-                content = Validator(event, values)
-                obj = content.create_expense_object()
+                items = Validator(event, values)
+                obj = items.create_expense_object()
                 Validator.validate_object(obj)
                 format_obj = FormatSetter(obj)
                 AddExpense.load_expense(format_obj.format_setter())

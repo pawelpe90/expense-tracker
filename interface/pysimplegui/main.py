@@ -1,6 +1,6 @@
 import PySimpleGUI as sg
 from util.settings import settings_runner
-from application.commands import *
+from application.database_agent import DatabaseActions
 from interface.pysimplegui.add_expense_window import add_expense_window
 from interface.pysimplegui.edit_expense_window import edit_expense_window
 
